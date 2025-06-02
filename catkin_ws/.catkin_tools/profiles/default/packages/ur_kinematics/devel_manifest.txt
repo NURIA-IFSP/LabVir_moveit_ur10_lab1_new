@@ -1,0 +1,25 @@
+universal_robot/ur_kinematics
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/share/ur_kinematics/cmake/ur_kinematicsConfig.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur_kinematics/cmake/ur_kinematicsConfig.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/share/ur_kinematics/cmake/ur_kinematicsConfig-version.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur_kinematics/cmake/ur_kinematicsConfig-version.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur30_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur30_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur20_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur20_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur15_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur15_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur20_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur20_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur10_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur10_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur10e_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur10e_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur30_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur30_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur3_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur3_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur10_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur10_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur3e_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur3e_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur5_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur5_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur3_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur3_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur15_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur15_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur16e_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur16e_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur10e_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur10e_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur16e_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur16e_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur3e_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur3e_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur5e_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur5e_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur5_kin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur5_kin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/libur5e_moveit_plugin.so /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/libur5e_moveit_plugin.so
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/python3/dist-packages/ur_kinematics/__init__.py /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/python3/dist-packages/ur_kinematics/__init__.py
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_kinematics/lib/pkgconfig/ur_kinematics.pc /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/pkgconfig/ur_kinematics.pc

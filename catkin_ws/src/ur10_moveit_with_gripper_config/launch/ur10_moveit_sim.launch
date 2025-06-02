@@ -1,0 +1,15 @@
+<launch>
+	<!-- Launch Your robot arms launch file which loads the robot in Gazebo and spawns the controllers -->
+	<include file = "$(find ur10_with_gripper)/launch/gazebo_ur10_robot.launch" />
+
+	<!-- Launch Moveit Move Group Node -->
+	<include file = "$(find ur10_moveit_with_gripper_config)/launch/move_group.launch" />
+
+	<!-- Run Rviz and load the default configuration to see the state of the move_group node -->
+	<arg name="use_rviz" default="true" />
+
+	<include file="$(find ur10_moveit_with_gripper_config)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
+		<arg name="rviz_config" value="$(find ur10_moveit_with_gripper_config)/config/moveit.rviz"/>
+	</include>
+
+</launch>

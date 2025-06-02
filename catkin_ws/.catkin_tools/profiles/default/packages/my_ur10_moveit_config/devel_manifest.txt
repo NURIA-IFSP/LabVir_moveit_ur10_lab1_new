@@ -1,0 +1,4 @@
+my_ur10_moveit_config
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/my_ur10_moveit_config/share/my_ur10_moveit_config/cmake/my_ur10_moveit_configConfig.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/my_ur10_moveit_config/cmake/my_ur10_moveit_configConfig.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/my_ur10_moveit_config/share/my_ur10_moveit_config/cmake/my_ur10_moveit_configConfig-version.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/my_ur10_moveit_config/cmake/my_ur10_moveit_configConfig-version.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/my_ur10_moveit_config/lib/pkgconfig/my_ur10_moveit_config.pc /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/pkgconfig/my_ur10_moveit_config.pc

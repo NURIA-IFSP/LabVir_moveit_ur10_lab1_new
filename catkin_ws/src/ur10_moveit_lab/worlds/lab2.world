@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="lab2">
+
+    <!-- Usar o tempo real -->
+    <physics type='ode'>
+      <real_time_update_rate>1000.0</real_time_update_rate>
+    </physics>
+
+    <!-- Iluminação -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Chão plano com textura -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Paredes do laboratório -->
+    <!-- <include>
+      <uri>model://brick_box_3x1x3</uri>
+      <pose>3 0 0.1 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://brick_box_3x1x3</uri>
+      <pose>0 3 0.1 0 0 1.57</pose>
+    </include> -->
+
+    <!-- Mesa -->
+    <include>
+      <uri>model://table</uri>
+      <pose>1 1 0 0 0 0</pose>
+    </include>
+    
+    <!-- Mesa 2 -->
+    <include>
+      <uri>model://table</uri>
+      <pose>1 1 0 0 0 1.57</pose>
+    </include>
+
+    <!-- Objeto sobre a mesa (ex: esfera vermelha) -->
+    <!-- <include>
+      <uri>model://coke_can</uri>
+      <pose>1 1 1.1 0 0 0</pose>
+    </include> -->
+
+    <!-- Câmera (opcional, apenas visual) -->
+    <!-- <include>
+      <uri>model://camera</uri>
+      <pose>1.5 1 1.5 0 0 0</pose>
+    </include> -->
+
+  </world>
+</sdf>

@@ -1,0 +1,4 @@
+.
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/src/share/src/cmake/srcConfig.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/src/cmake/srcConfig.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/src/share/src/cmake/srcConfig-version.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/src/cmake/srcConfig-version.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/src/lib/pkgconfig/src.pc /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/pkgconfig/src.pc

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur10_with_gripper">
+
+  <!-- Inclui o UR10 -->
+  <!-- Definição do parâmetro para o tipo de interface de hardware -->
+  <xacro:property name="transmission_hw_interface" value="hardware_interface/EffortJointInterface"/>
+  
+  
+  <xacro:include filename="$(find ur_description)/urdf/inc/ur10_macro.xacro"/>
+  <!-- Instancia o UR10 com o parâmetro -->
+  <xacro:ur10_robot 
+    prefix=""
+    transmission_hw_interface="${transmission_hw_interface}" />
+  <!-- <xacro:ur10_robot prefix="" /> -->
+  
+  <!-- Inclui a garra PG70 -->
+    <xacro:include filename="$(find ur10_with_gripper)/urdf/pg70_with_control.urdf.xacro"/>
+
+    <!-- Adiciona a garra ao final do braço -->
+    <xacro:schunk_pg70 parent="tool0" name="pg70">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:schunk_pg70>
+  
+  <!-- Plugin para ROS control via Gazebo -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+  </gazebo>
+
+</robot>

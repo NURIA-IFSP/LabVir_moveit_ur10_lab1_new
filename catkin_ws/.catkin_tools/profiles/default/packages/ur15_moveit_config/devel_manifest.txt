@@ -1,0 +1,4 @@
+universal_robot/ur15_moveit_config
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur15_moveit_config/share/ur15_moveit_config/cmake/ur15_moveit_configConfig-version.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur15_moveit_config/cmake/ur15_moveit_configConfig-version.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur15_moveit_config/share/ur15_moveit_config/cmake/ur15_moveit_configConfig.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur15_moveit_config/cmake/ur15_moveit_configConfig.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur15_moveit_config/lib/pkgconfig/ur15_moveit_config.pc /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/pkgconfig/ur15_moveit_config.pc

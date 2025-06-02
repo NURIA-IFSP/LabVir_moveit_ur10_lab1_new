@@ -1,0 +1,44 @@
+<launch>
+  <!-- Argumentos personalizáveis -->
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="world_name" default="$(find ur10_moveit_lab)/worlds/lab2.world"/>
+  <arg name="spawn_x" default="1.0" />
+  <arg name="spawn_y" default="0.0" />
+  <arg name="spawn_z" default="0.505" />
+  <arg name="spawn_roll" default="1.57" />
+
+
+  <!-- Inicia o Gazebo com o mundo personalizado -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <!-- Usa o tempo simulado -->
+  <param name="/use_sim_time" value="true"/>
+
+  <!-- Aguarda o Gazebo estar pronto -->
+  <node pkg="roslaunch" type="roslaunch" name="wait_for_gazebo" args="$(find gazebo_ros)/launch/wait_for_gazebo.launch" required="true"/>
+
+  <!-- Lança o UR10 usando o bringup do pacote ur_gazebo,
+       com o argumento start_gazebo desativado para evitar conflito -->
+  <include file="$(find ur_gazebo)/launch/ur10_bringup.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="start_gazebo" value="false"/>
+    <arg name="spawn_x" value="$(arg spawn_x)"/>
+    <arg name="spawn_y" value="$(arg spawn_y)"/>
+    <arg name="spawn_z" value="$(arg spawn_z)"/>
+    <arg name="spawn_roll" value="$(arg spawn_roll)"/>
+  </include>
+  
+    <!-- Lança o bloco de apoio do UR10-->
+  <param name="mytable_description" command="$(find xacro)/xacro $(find ur10_moveit_lab)/urdf/mytable.urdf" />
+  <node name="spawn_mytable" pkg="gazebo_ros" type="spawn_model"
+    args="-param mytable_description -urdf -model mytable -x 0.75 -y -0.25 -z 0"
+    output="screen"/>
+
+
+</launch>

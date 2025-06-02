@@ -1,0 +1,43 @@
+<launch>
+  <!-- Argumentos para configuração -->
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="world_name" default="$(find ur10_moveit_lab)/worlds/lab2.world"/>
+  <arg name="spawn_x" default="1.0"/>
+  <arg name="spawn_y" default="0.0"/>
+  <arg name="spawn_z" default="0.505"/>
+  <arg name="spawn_roll" default="1.57"/>
+
+  <!-- Tempo simulado -->
+  <param name="/use_sim_time" value="true"/>
+
+  <!-- Inicia o Gazebo com o mundo personalizado -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <!-- Carrega a descrição do UR10 (robot_description) -->
+  <include file="$(find ur10_moveit_lab)/launch/ur10_upload.launch"/>
+
+  <!-- Faz o spawn do UR10 no Gazebo -->
+  <node name="spawn_ur10" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param robot_description -model ur10
+              -x $(arg spawn_x) -y $(arg spawn_y) -z $(arg spawn_z)"
+        output="screen"/>
+
+  <!-- Spawn da mesa de apoio -->
+  <param name="mytable_description"
+         command="$(find xacro)/xacro $(find ur10_moveit_lab)/urdf/mytable.urdf"/>
+
+  <node name="spawn_mytable" pkg="gazebo_ros" type="spawn_model"
+        args="-param mytable_description -urdf -model mytable -x 0.75 -y -0.25 -z 0"
+        output="screen"/>
+
+  <!-- Lança o MoveIt conectado ao simulado -->
+  <include file="$(find ur10_moveit_config)/launch/moveit_planning_execution.launch">
+    <arg name="sim" value="true"/>
+  </include>
+ 
+</launch>

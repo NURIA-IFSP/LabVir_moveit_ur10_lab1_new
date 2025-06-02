@@ -1,0 +1,22 @@
+<launch>
+  <!-- Argumentos opcionais -->
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="gazebo_world" default="$(find ur10_moveit_lab)/worlds/lab2.world"/>
+
+
+  <!-- Inicia Gazebo com o robô ur10 -->
+  <include file="$(find ur_gazebo)/launch/ur10_bringup.launch">
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="gazebo_world" value="$(arg gazebo_world)"/>
+  </include>
+
+  <!-- Inicia MoveIt com conexão para a simulação -->
+  <include file="$(find ur10_moveit_config)/launch/moveit_planning_execution.launch">
+    <arg name="sim" value="true"/>
+  </include>
+
+  <!-- Inicia RViz com configuração do MoveIt -->
+  <include file="$(find ur10_moveit_config)/launch/moveit_rviz.launch"/>
+</launch>

@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="lab1">
+    <!-- Definições básicas de ambiente -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Mesa para o UR10 -->
+    <include>
+      <uri>model://table</uri>
+      <name>ur10_table</name>
+      <pose>0 0 0 0 0 0</pose> <!-- (x y z roll pitch yaw) -->
+    </include>
+
+
+    <!-- Parâmetros de física -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- Sky visual (opcional) -->
+    <scene>
+      <sky>
+        <time>12</time>
+        <clouds>
+          <speed>12</speed>
+          <direction>0.5</direction>
+        </clouds>
+      </sky>
+    </scene>
+  </world>
+</sdf>

@@ -1,0 +1,28 @@
+<launch>
+  <!-- Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- Spawn robot -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find ur10_with_gripper)/urdf/ur10_with_gripper.urdf.xacro'"/>
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-param robot_description -urdf -model ur10_with_gripper"/>
+
+  <!-- Controller manager -->
+  <rosparam file="$(find ur10_with_gripper)/config/ur10_with_gripper_controllers.yaml" command="load"/>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" output="screen"
+        args="joint_state_controller 
+              shoulder_pan_joint
+              shoulder_lift_joint
+              elbow_joint
+              wrist_1_joint
+              wrist_2_joint
+              wrist_3_joint
+              gripper_controller"/>
+
+</launch>

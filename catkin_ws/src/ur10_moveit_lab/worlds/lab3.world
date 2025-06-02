@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="lab3">
+
+    <!-- Física -->
+    <physics type='ode'>
+      <real_time_update_rate>1000.0</real_time_update_rate>
+    </physics>
+
+    <!-- Iluminação -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Chão -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Mesa 1 -->
+    <include>
+      <uri>model://table</uri>
+      <name>mesa_1</name>
+      <pose>0.75 0.4 0 0 0 0</pose>
+    </include>
+
+    <!-- Mesa 2 -->
+    <include>
+      <uri>model://table</uri>
+      <name>mesa_2</name>
+      <pose>1.95 -0.8 0 0 0 1.57</pose>
+    </include>
+
+    
+ 
+  </world>
+</sdf>

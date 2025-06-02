@@ -1,0 +1,4 @@
+ur10_with_gripper
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur10_with_gripper/share/ur10_with_gripper/cmake/ur10_with_gripperConfig-version.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur10_with_gripper/cmake/ur10_with_gripperConfig-version.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur10_with_gripper/share/ur10_with_gripper/cmake/ur10_with_gripperConfig.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur10_with_gripper/cmake/ur10_with_gripperConfig.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur10_with_gripper/lib/pkgconfig/ur10_with_gripper.pc /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/pkgconfig/ur10_with_gripper.pc

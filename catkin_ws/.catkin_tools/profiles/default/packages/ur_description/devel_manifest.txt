@@ -1,0 +1,4 @@
+universal_robot/ur_description
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_description/share/ur_description/cmake/ur_descriptionConfig-version.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur_description/cmake/ur_descriptionConfig-version.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_description/share/ur_description/cmake/ur_descriptionConfig.cmake /LabVir_moveit_ur10_lab1/catkin_ws/devel/share/ur_description/cmake/ur_descriptionConfig.cmake
+/LabVir_moveit_ur10_lab1/catkin_ws/devel/.private/ur_description/lib/pkgconfig/ur_description.pc /LabVir_moveit_ur10_lab1/catkin_ws/devel/lib/pkgconfig/ur_description.pc
