@@ -1,25 +1,35 @@
 FROM osrf/ros:noetic-desktop-full
 
-# Argumentos para criar usuário não-root
+# === CONFIGURAÇÃO DE USUÁRIO NÃO-ROOT ===
 ARG USERNAME=ubuntu
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-# Criação de usuário com permissões sudo
-RUN apt-get update && apt-get install -y sudo ca-certificates wget gnupg lsb-release && \
-    groupadd --gid $USER_GID $USERNAME && \
+ENV DEBIAN_FRONTEND=noninteractive
+
+# === INSTALA FERRAMENTAS BÁSICAS E REMOVE REPOSITÓRIO ANTIGO DO ROS ===
+RUN sed -i '/packages.ros.org/d' /etc/apt/sources.list.d/ros1-latest.list \
+    && apt-get update \
+    && apt-get install -y curl wget gnupg2 lsb-release ca-certificates sudo
+
+# === INSTALA NOVA CHAVE GPG DO ROS ===
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc \
+    | gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+# === RECONFIGURA O REPOSITÓRIO DO ROS ===
+RUN echo "deb [signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" \
+    > /etc/apt/sources.list.d/ros1-latest.list
+
+# === CRIA USUÁRIO ===
+RUN groupadd --gid $USER_GID $USERNAME && \
     useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME && \
-    usermod -a -G dialout $USERNAME && \
+    usermod -aG sudo,dialout,video $USERNAME && \
     echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Alterna para o novo usuário
 USER $USERNAME
 
-# Adiciona ao grupo video
-RUN sudo usermod --append --groups video $USERNAME
-
-# Atualiza pacotes e instala dependências ROS
+# === ATUALIZA SISTEMA E INSTALA DEPENDÊNCIAS DO ROS ===
 RUN sudo apt update && sudo apt upgrade -y && \
     sudo apt install -y git nano python-is-python3 \
     ros-noetic-ros-tutorials \
@@ -34,94 +44,114 @@ RUN sudo apt update && sudo apt upgrade -y && \
     libpoco-dev \
     python3-wstool
 
-# Atualiza rosdep (como root)
+# === CONFIGURA ROSDEP (COMO ROOT) ===
 USER root
 RUN rosdep init && \
     rosdep update || true
 
-# Instala XFCE + pacotes gráficos
-ENV DEBIAN_FRONTEND=noninteractive
+# === INSTALA XFCE + VNC ===
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     xfce4 xfce4-terminal \
-    novnc websockify xterm x11vnc curl net-tools \
+    novnc websockify xterm x11vnc net-tools \
     python3-pip libgl1-mesa-dri libgl1-mesa-glx dbus-x11 mesa-utils \
     x11-utils x11-xserver-utils wmctrl xdotool firefox autocutsel && \
     apt-get clean
 
-# Configura o display para o ambiente gráfico
+# === CONFIGURA DISPLAY ===
 ENV DISPLAY=:1
 
-# Desabilita o aviso de EOL do ROSI
-ENV DISABLE_ROS1_EOL_WARNINGS 1
+# === DESABILITA AVISO DE EOL DO ROS ===
+ENV DISABLE_ROS1_EOL_WARNINGS=1
 
-# Instala dependências para o VSCode
+# === DEPENDÊNCIAS DO VSCODE ===
 RUN apt-get update && apt-get install -y \
     gnome-keyring \
     libsecret-1-0 libsecret-1-dev
 
-# Instala TurboVNC
-RUN wget -O /tmp/turbovnc.deb https://github.com/TurboVNC/turbovnc/releases/download/3.1.1/turbovnc_3.1.1_amd64.deb && \
+# === INSTALA TURBOVNC ===
+RUN curl -L -o /tmp/turbovnc.deb https://github.com/TurboVNC/turbovnc/releases/download/3.1.1/turbovnc_3.1.1_amd64.deb && \
     dpkg -i /tmp/turbovnc.deb || apt-get install -fy && \
     rm /tmp/turbovnc.deb
 
 ENV PATH="/opt/TurboVNC/bin:${PATH}"
 
-# Instala o VSCode
+# === INSTALA VSCODE ===
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft.gpg && \
     echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list && \
     apt update && apt install -y code
 
-# Configura VNC com senha fixa
+# === CONFIGURA VNC ===
 RUN mkdir -p /home/${USERNAME}/.vnc && \
     echo "senha-segura" | /opt/TurboVNC/bin/vncpasswd -f > /home/${USERNAME}/.vnc/passwd && \
     chmod 600 /home/${USERNAME}/.vnc/passwd && \
     chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vnc
 
-# Copia scripts de inicialização para a pasta home/ubuntu
+# === COPIA SCRIPTS ===
 COPY ../scripts/*.sh /home/${USERNAME}/
 RUN chown ${USERNAME}:${USERNAME} /home/${USERNAME}/*.sh && \
     chmod +x /home/${USERNAME}/*.sh
 
-# Expõe portas
-EXPOSE 5901 6080
-
-# Configura ROS no .bashrc
+# === CONFIGURA ROS NO BASHRC ===
 RUN echo "source /opt/ros/noetic/setup.bash" >> /home/$USERNAME/.bashrc && \
     echo "source /projeto1_PosDoc/init.bash" >> /home/$USERNAME/.bashrc
 
-# === SETUP MOVEIT WORKSPACE ===
-USER root
+# === COPIA O WORKSPACE ===
+COPY catkin_ws /home/$USERNAME/catkin_ws
 
-# Copia o workspace catkin_ws do host para o container
-COPY catkin_ws /LabVir_moveit_ur10_lab1/catkin_ws
-
-# Configura ambiente do usuário e permissões
 RUN echo "source /home/$USERNAME/catkin_ws/devel/setup.bash" >> /home/$USERNAME/.bashrc && \
-    chown -R $USERNAME:$USERNAME /home/$USERNAME
+    sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/catkin_ws
 
-# Adiciona script para abrir tutorial e RViz lado a lado
+# === SCRIPT: ABRE TUTORIAL + RVIZ ===
 RUN mkdir -p /home/$USERNAME/Desktop && \
-    echo '#!/bin/bash\n# Source dos workspaces ROS\nsource /ros/noetic/setup.bash\nsource /home/ubuntu/catkin_ws/devel/setup.bash\n\n# Detecta resolução da tela\nRES=$(xdpyinfo | grep dimensions | awk "{print $2}")\nWIDTH=$(echo $RES | cut -d "x" -f1)\nHEIGHT=$(echo $RES | cut -d "x" -f2)\nHALF_WIDTH=$(($WIDTH / 2))\n\n# Abre navegador na metade esquerda\nxdg-open "https://moveit.github.io/moveit_tutorials/doc/quickstart_in_rviz/quickstart_in_rviz_tutorial.html" &\nsleep 3\nwmctrl -r :ACTIVE: -e 0,0,0,$HALF_WIDTH,$HEIGHT\n\n# Abre RViz na metade direita\nxfce4-terminal --title="RViz Tutorial" --geometry=100x30 --hold -e "bash -c 'roslaunch panda_moveit_config demo.launch rviz_tutorial:=true'"&\nsleep 5\nwmctrl -r RViz -e 0,$HALF_WIDTH,0,$HALF_WIDTH,$HEIGHT\n' > /home/ubuntu/start_tutorial_and_rviz.sh && \
-    chmod +x /home/ubuntu/start_tutorial_and_rviz.sh && \
-    chown ubuntu:ubuntu /home/ubuntu/start_tutorial_and_rviz.sh
+    echo '#!/bin/bash\n\
+source /opt/ros/noetic/setup.bash\n\
+source /home/ubuntu/catkin_ws/devel/setup.bash\n\
+RES=$(xdpyinfo | grep dimensions | awk "{print \$2}")\n\
+WIDTH=$(echo $RES | cut -d "x" -f1)\n\
+HEIGHT=$(echo $RES | cut -d "x" -f2)\n\
+HALF_WIDTH=$(($WIDTH / 2))\n\
+xdg-open "https://moveit.github.io/moveit_tutorials/doc/quickstart_in_rviz/quickstart_in_rviz_tutorial.html" &\n\
+sleep 3\n\
+wmctrl -r :ACTIVE: -e 0,0,0,$HALF_WIDTH,$HEIGHT\n\
+xfce4-terminal --title="RViz Tutorial" --geometry=100x30 --hold -e "bash -c \"roslaunch panda_moveit_config demo.launch rviz_tutorial:=true\"" &\n\
+sleep 5\n\
+wmctrl -r RViz -e 0,$HALF_WIDTH,0,$HALF_WIDTH,$HEIGHT\n' \
+    > /home/$USERNAME/start_tutorial_and_rviz.sh && \
+    chmod +x /home/$USERNAME/start_tutorial_and_rviz.sh && \
+    chown $USERNAME:$USERNAME /home/$USERNAME/start_tutorial_and_rviz.sh
 
-# Adiciona atalho na área de trabalho para o script init_ros.sh
-RUN echo '[Desktop Entry]\nVersion=1.0\nType=Application\nName=Init ROS\nComment=Inicializa ambiente ROS\nExec=/home/ubuntu/init_ros.sh\nIcon=utilities-terminal\nTerminal=true\nCategories=Development;' > /home/ubuntu/Desktop/init_ros.desktop && \
-    chmod +x /home/ubuntu/Desktop/init_ros.desktop && \
-    chown ubuntu:ubuntu /home/ubuntu/Desktop/init_ros.desktop
+# === ATALHOS NA DESKTOP ===
+RUN echo '[Desktop Entry]\n\
+Version=1.0\n\
+Type=Application\n\
+Name=Init ROS\n\
+Comment=Inicializa ambiente ROS\n\
+Exec=/home/ubuntu/init_ros.sh\n\
+Icon=utilities-terminal\n\
+Terminal=true\n\
+Categories=Development;' \
+> /home/ubuntu/Desktop/init_ros.desktop && \
+chmod +x /home/ubuntu/Desktop/init_ros.desktop && \
+chown ubuntu:ubuntu /home/ubuntu/Desktop/init_ros.desktop
 
-# Adiciona atalho na área de trabalho para o script Tutorial + RViz
-RUN echo '[Desktop Entry]\nVersion=1.0\nType=Application\nName=Tutorial + RViz\nComment=Abre navegador com o tutorial e o RViz lado a lado\nExec=/home/ubuntu/start_tutorial_and_rviz.sh\nIcon=applications-internet\nTerminal=false\nCategories=Development;' > /home/ubuntu/Desktop/tutorial_and_rviz.desktop && \
-    chmod +x /home/ubuntu/Desktop/tutorial_and_rviz.desktop && \
-    chown ubuntu:ubuntu /home/ubuntu/Desktop/tutorial_and_rviz.desktop
+RUN echo '[Desktop Entry]\n\
+Version=1.0\n\
+Type=Application\n\
+Name=Tutorial + RViz\n\
+Comment=Abre navegador com o tutorial e o RViz lado a lado\n\
+Exec=/home/ubuntu/start_tutorial_and_rviz.sh\n\
+Icon=applications-internet\n\
+Terminal=false\n\
+Categories=Development;' \
+> /home/ubuntu/Desktop/tutorial_and_rviz.desktop && \
+chmod +x /home/ubuntu/Desktop/tutorial_and_rviz.desktop && \
+chown ubuntu:ubuntu /home/ubuntu/Desktop/tutorial_and_rviz.desktop
 
-# === CONFIGURAÇÃO DE IMAGENS ===
-# Copia wallpapers para o container
+# === WALLPAPER ===
 COPY ../images/wallpapers/ /usr/share/backgrounds/labvir/
 RUN chmod 644 /usr/share/backgrounds/labvir/*
 
-# Cria diretório de autostart e adiciona script do wallpaper
 USER $USERNAME
 RUN mkdir -p /home/$USERNAME/.config/autostart && \
     echo "[Desktop Entry]\n\
@@ -129,12 +159,15 @@ Type=Application\n\
 Name=Set Wallpaper\n\
 Exec=/home/ubuntu/set-wallpaper.sh\n\
 Terminal=false\n\
-X-GNOME-Autostart-enabled=true" > /home/$USERNAME/.config/autostart/set-wallpaper.desktop && \
-    chmod +x /home/$USERNAME/.config/autostart/set-wallpaper.desktop
+X-GNOME-Autostart-enabled=true" \
+> /home/$USERNAME/.config/autostart/set-wallpaper.desktop && \
+chmod +x /home/$USERNAME/.config/autostart/set-wallpaper.desktop
 
+# === INSTALA ROS-APT-SOURCE (MANTÉM AS CHAVES ATUALIZADAS) ===
+USER root
+RUN apt update && apt install -y ros-apt-source
 
-# Retorna para o usuário normal
+# === PORTAS E COMANDO PADRÃO ===
+EXPOSE 5901 6080
 USER $USERNAME
-
-# Comando padrão
 CMD ["/home/ubuntu/start-vnc.sh"]

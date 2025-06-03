@@ -10,11 +10,15 @@
     "--volume=/tmp/.X11-unix:/tmp/.X11-unix:rw",
     "--shm-size=2g"
   ],
-  "forwardPorts": [6080],
+  "forwardPorts": [6080, 5901],  // <-- adiciona 5901 aqui
   "portsAttributes": {
     "6080": {
       "label": "noVNC Desktop",
       "onAutoForward": "openBrowser"
+    },
+    "5901": {
+      "label": "VNC Desktop",
+      "onAutoForward": "notify"
     }
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
@@ -39,7 +43,9 @@
   },
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
-      "installZsh": false
+       "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
     },
     "ghcr.io/devcontainers/features/desktop-lite:1": {
       "desktop": "xfce",

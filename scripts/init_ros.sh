@@ -1,29 +1,46 @@
 #!/bin/bash
-# init_ros.sh - Instalação do pacote schunk_pg70 e dependências ROS
 set -e
 
-# 1. Instalação do serial
-# Clona o repositório serial
-git clone https://github.com/wjwwood/serial.git /tmp/serial
-# Compila e instala a lib serial
-cd /tmp/serial
-make && make install
-# Remove a pasta temporária para deixar o container limpo
-rm -rf /tmp/serial
+echo "### [1/6] Detectando diretório catkin_ws ###"
 
-# 2. Servidor de pacotes ROS
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+DIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+while [[ "$DIR" != "/" && ! -d "$DIR/catkin_ws/src" ]]; do
+    echo "Subindo de $DIR"
+    DIR=$(dirname "$DIR")
+done
+
+if [[ "$DIR" == "/" ]]; then
+    echo "❌ Diretório catkin_ws não encontrado."
+    exit 1
+fi
+
+CATKIN_WS="$DIR/catkin_ws"
+echo "✅ Diretório catkin_ws encontrado em: $CATKIN_WS"
+
+
+echo "### [2/6] Instalando biblioteca serial ###"
+# git clone https://github.com/wjwwood/serial.git /tmp/serial
+# cd /tmp/serial
+# make && sudo make install
+# rm -rf /tmp/serial
+
 sudo apt update
+sudo apt install ros-noetic-serial
 
-# 3. Verificação de dependências dos pacotes
-echo "### rosdep update ###"
+# echo "### [3/6] Adicionando chave e repositório do ROS ###"
+
+# sudo apt update
+
+echo "### [4/6] Atualizando rosdep ###"
+sudo rosdep init || true
 rosdep update
-cd  /LabVir_moveit_ur10_lab1/catkin_ws
-echo "### rosdep install ###"
+
+echo "### [5/6] Instalando dependências do catkin_ws ###"
+cd "$CATKIN_WS"
 rosdep install --from-paths src --ignore-src -r -y
 
-# 4. Compilação
-echo "### Compilando pacotes ###"
+echo "### [6/6] Compilando pacotes ###"
 catkin build
 source devel/setup.bash
+
+echo "### ✅ Script finalizado com sucesso! ###"
