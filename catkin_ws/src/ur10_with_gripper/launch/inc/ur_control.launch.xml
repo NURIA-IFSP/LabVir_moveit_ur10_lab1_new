@@ -15,9 +15,19 @@
     driver which would be used with a real robot.
   -->
 
+  <!-- Parâmetros de posição para spawn do robô -->
+  <arg name="spawn_x" default="0.0" doc="Posição em X para o spawn do robô"/>
+  <arg name="spawn_y" default="0.0" doc="Posição em Y para o spawn do robô"/>
+  <arg name="spawn_z" default="0.505" doc="Posição em Z para o spawn do robô"/>
+  <arg name="spawn_roll" default="0.0" doc="Rotação em torno de X (em radianos)"/>
+  <arg name="spawn_pitch" default="0.0" doc="Rotação em torno de Y (em radianos)"/>
+  <arg name="spawn_yaw" default="0.0" doc="Rotação em torno de Z (em radianos)"/>
+  <!-- Namespace para o robô -->
+  <arg name="namespace" default="/ur10" />
+
   <!-- Parameters we share with ur_robot_driver -->
   <arg name="controller_config_file" doc="Config file used for defining the ROS-Control controllers."/>
-  <arg name="controllers" default="joint_state_controller eff_joint_traj_controller gripper_controller"/>
+  <arg name="controllers" default="joint_state_controller eff_joint_traj_controller"/>
   <arg name="stopped_controllers" default="joint_group_eff_controller"/>
 
   <!-- Gazebo parameters -->
@@ -26,7 +36,6 @@
   <arg name="gui" default="true" doc="If true, Gazebo UI is started. If false, only start Gazebo server." />
   <arg name="paused" default="false" doc="If true, start Gazebo in paused mode. If false, start simulation as soon as Gazebo has loaded." />
   <arg name="robot_description_param_name" default="robot_description" doc="Name of the parameter which contains the robot description (ie: URDF) which should be spawned into Gazebo." />
-  <arg name="spawn_z" default="0.1" doc="At which height the model should be spawned. NOTE: lower values will cause the robot to collide with the ground plane." />
   <arg name="start_gazebo" default="true" doc="If true, Gazebo will be started. If false, Gazebo will be assumed to have been started elsewhere." />
 
   <!--Setting initial configuration -->
@@ -48,17 +57,19 @@
       -urdf
       -param $(arg robot_description_param_name)
       -model $(arg gazebo_model_name)
-      -z $(arg spawn_z)
+       -x $(arg spawn_x) -y $(arg spawn_y) -z $(arg spawn_z)
+       -R $(arg spawn_roll) -P $(arg spawn_pitch) -Y $(arg spawn_yaw)
       $(arg initial_joint_positions)
       "
     output="screen" respawn="false" />
 
-  <!-- Load and start the controllers listed in the 'controllers' arg. -->
+  <!-- Load and start the controllers listed in the 'controllers' arg no namespace fornecido -->
   <node name="ros_control_controller_spawner" pkg="controller_manager" type="spawner"
-    args="$(arg controllers)" output="screen" respawn="false" />
+    args="--namespace=$(arg namespace) $(arg controllers)" output="screen" respawn="false" />
 
   <!-- Load other controllers, but do not start them -->
   <node name="ros_control_stopped_spawner" pkg="controller_manager" type="spawner"
-    args="--stopped $(arg stopped_controllers)" output="screen" respawn="false" />
+    args="--namespace=$(arg namespace) --stopped $(arg stopped_controllers)" output="screen" respawn="false" />
+
 
 </launch>

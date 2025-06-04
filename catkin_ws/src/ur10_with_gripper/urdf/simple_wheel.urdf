@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<robot name="roda_simples">
+
+  <!-- Link Pai (base_link) -->
+  <link name="base_link">
+    <inertial>
+      <mass value="0.1"/> <!-- Massa mínima -->
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Link da Roda -->
+  <link name="wheel_link">
+    <!-- Parte Visual (aparência no RViz) -->
+    <visual>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/> <!-- Raio 10cm, largura 5cm -->
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/> <!-- Cor preta -->
+      </material>
+    </visual>
+
+    <!-- Parte de Colisão (física no Gazebo) -->
+    <collision>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.9</mu> <!-- Coeficiente de atrito alto (borracha) -->
+            <mu2>0.9</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+
+    <!-- Propriedades de Inércia (obrigatório para simulação física) -->
+    <inertial>
+      <mass value="20"/> <!-- Massa de 20 kg -->
+      <inertia
+        ixx="0.001" ixy="0" ixz="0"
+        iyy="0.001" iyz="0"
+        izz="0.001"/> <!-- Tensor de inércia simplificado -->
+    </inertial>
+  </link>
+
+  <!-- Configurações específicas para o Gazebo -->
+  <gazebo reference="wheel_link">
+    <material>Gazebo/Black</material> <!-- Cor no Gazebo -->
+    <mu1>0.9</mu1> <!-- Atrito estático -->
+    <mu2>0.9</mu2> <!-- Atrito dinâmico -->
+    <kp>1000000.0</kp> <!-- Rigidez de contato -->
+    <kd>100.0</kd> <!-- Amortecimento de contato -->
+  </gazebo>
+
+  <!-- Junta Fixa (opcional, para anexar a um link pai) -->
+  <joint name="wheel_joint" type="continuous">
+    <parent link="base_link"/> <!-- Substitua pelo link pai do seu robô -->
+    <child link="wheel_link"/>
+    <origin xyz="0 0 0" rpy="1.57 0 0"/> <!-- Posição relativa -->
+  </joint>
+
+ <gazebo>
+  <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+    <jointName>wheel_joint</jointName>
+    <updateRate>50</updateRate> <!-- Taxa explícita -->
+    <alwaysOn>true</alwaysOn>
+  </plugin>
+</gazebo>
+
+</robot>

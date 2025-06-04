@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robo_simples">
+
+  <!-- ========== PARÂMETROS AJUSTÁVEIS ========== -->
+  <xacro:property name="base_length" value="0.4" />  <!-- Comprimento da base (X) -->
+  <xacro:property name="base_width"  value="0.2" />  <!-- Largura da base (Y) -->
+  <xacro:property name="base_height" value="0.1" />  <!-- Altura da base (Z) -->
+
+  <xacro:property name="wheel_radius" value="0.1" /> <!-- Raio da roda -->
+  <xacro:property name="wheel_width"  value="0.05" /> <!-- Largura da roda -->
+  <xacro:property name="wheel_y_offset" value="0.15" /> <!-- Posição Y (distância do centro) -->
+  <xacro:property name="wheel_z_offset" value="-0.05" /> <!-- Posição Z (altura em relação à base) -->
+
+  <!-- ========== BASE DO ROBÔ ========== -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+      <material name="vermelho">
+        <color rgba="1 0 0 0.5"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- ========== DEFINIÇÃO DA RODA (MACRO REUTILIZÁVEL) ========== -->
+  <xacro:macro name="wheel" params="prefix xyz_origin">
+    <link name="${prefix}_wheel">
+      <visual>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="preto">
+          <color rgba="0 0 0 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel"/>
+      <origin xyz="${xyz_origin}" rpy="1.5708 0 0"/> <!-- Rotação de 90° em X -->
+      <axis xyz="0 0 1"/> <!-- Eixo de rotação em X -->
+    </joint>
+  </xacro:macro>
+
+  <!-- ========== Geração do modelo do robo a partir das macros ========== -->
+  <!-- Roda direita -->
+  <xacro:wheel prefix="front_right" xyz_origin="${base_length/2} -${wheel_y_offset} ${wheel_z_offset}"/>
+  <!-- Roda esquerda -->
+  <xacro:wheel prefix="front_left" xyz_origin="${base_length/2} ${wheel_y_offset} ${wheel_z_offset}"/>
+
+  <xacro:wheel prefix="rear_right" xyz_origin="-${base_length/2} -${wheel_y_offset} ${wheel_z_offset}"/>
+  
+  <xacro:wheel prefix="rear_left" xyz_origin="-${base_length/2} ${wheel_y_offset} ${wheel_z_offset}"/>
+
+</robot>

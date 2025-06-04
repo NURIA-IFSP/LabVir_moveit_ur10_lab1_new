@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<robot name="robo_simples">
+
+  <!-- Define um elo (link) chamado "base_link" que serve como base do robô -->
+  <link name="base_link">
+    <visual>
+      <!-- Forma geométrica (caixa com dimensões 0.4x0.2x0.1 metros) -->
+      <geometry>
+        <box size="0.4 0.2 0.1"/>
+      </geometry>
+      <!-- Cor (vermelho com transparência) -->
+      <material name="vermelho">
+        <color rgba="1 0 0 0.5"/>
+      </material>
+    </visual>
+    <!-- Propriedades físicas para simulação -->
+    <collision>
+      <geometry>
+        <box size="0.4 0.2 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- Define um segundo elo para uma roda -->
+  <link name="roda_direita">
+    <visual>
+      <geometry>
+        <cylinder length="0.045" radius="0.1"/>
+      </geometry>
+      <material name="preto">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Define uma junta que conecta a roda à base -->
+  <joint name="junta_roda_direita" type="continuous">
+    <parent link="base_link"/>
+    <child link="roda_direita"/>
+    <!-- 
+      Origem ajustada:
+      - xyz: posiciona a roda 0.15m para a esquerda (Y negativo) e 0.05m para baixo (Z negativo)
+      - rpy: rotaciona a roda 90° em Y (para deixá-la horizontal, paralela ao eixo X)
+    -->
+    <origin xyz="0 -0.15 -0.05" rpy="1.5708 0  0"/>
+    <!-- Eixo de rotação (x,y,z) -->
+    <axis xyz="0 0 1"/>
+  </joint>
+
+</robot>

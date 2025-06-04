@@ -1,0 +1,19 @@
+<launch>
+  <!-- Define o caminho para o arquivo Xacro -->
+  <arg name="urdf_file" default="$(find ur10_with_gripper)/urdf/simple_robot.xacro" />
+
+  <!-- Processa o Xacro e publica o URDF -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(arg urdf_file)'" />
+
+  <!-- GUI para manipular juntas -->
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+
+
+  <!-- Publica os estados do robô -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+  </node>
+
+  <!-- Abre o RViz com a configuração salva -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ur10_with_gripper)/rviz/ur10_with_gripper.rviz" required="true" />
+</launch>

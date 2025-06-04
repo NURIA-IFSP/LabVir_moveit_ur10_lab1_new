@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Namespace para o robô -->
+  <arg name="namespace" default="/ur10" />
+  <arg name="gazebo_model_name" default="ur10"/>
+
+  <!-- Argumentos de posicionamento -->
+  <arg name="spawn_x" default="1.0"/>
+  <arg name="spawn_y" default="0.0"/>
+  <arg name="spawn_z" default="0.505"/>
+  <arg name="spawn_roll" default="0.0"/>
+  <arg name="spawn_pitch" default="0.0"/>
+  <arg name="spawn_yaw" default="1.57"/>
+
+  <!-- Arquivos de parâmetros do UR10 -->
+  <arg name="joint_limit_params" default="$(find ur_description)/config/ur10/joint_limits.yaml"/>
+  <arg name="kinematics_params" default="$(find ur_description)/config/ur10/default_kinematics.yaml"/>
+  <arg name="physical_params" default="$(find ur_description)/config/ur10/physical_parameters.yaml"/>
+  <arg name="visual_params" default="$(find ur_description)/config/ur10/visual_parameters.yaml"/>
+  
+  <!-- Interface de hardware -->
+  <arg name="transmission_hw_interface" default="hardware_interface/EffortJointInterface"/>
+
+  <!-- Configuração dos controladores -->
+  <arg name="ur_controller_config" default="$(find ur_gazebo)/config/ur10_controllers.yaml"/>
+  <arg name="gripper_controller_config" default="$(find ur10_with_gripper)/config/pg70_controllers.yaml"/>
+  <arg name="controllers" default="joint_state_controller eff_joint_traj_controller gripper_controller"/>
+  <arg name="stopped_controllers" default="joint_group_eff_controller"/>
+
+  <!-- Configuração do robot_state_publisher -->
+  <arg name="tf_prefix" default="$(arg namespace)"/>
+  <arg name="tf_pub_rate" default="125"/>
+
+  <!-- Parâmetros do Gazebo -->
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="gazebo_world" default="$(find ur10_moveit_lab)/worlds/world2.world"/>
+
+  <!-- ========== Carregamento da descrição do robô ========== -->
+  
+ <!-- Publica para o gazebo_ros_control -->
+<param name="robot_description" 
+       command="$(find xacro)/xacro '$(find ur10_with_gripper)/urdf/ur10_with_gripper.urdf.xacro'
+                transmission_hw_interface:=$(arg transmission_hw_interface)
+                joint_limit_params:=$(arg joint_limit_params)
+                kinematics_params:=$(arg kinematics_params)
+                physical_params:=$(arg physical_params)
+                visual_params:=$(arg visual_params)
+                robot_namespace:=$(arg namespace)"/>
+
+<!-- Publica no namespace /ur10 para os outros nós -->
+<param name="$(arg namespace)/robot_description"
+       command="$(find xacro)/xacro '$(find ur10_with_gripper)/urdf/ur10_with_gripper.urdf.xacro'
+                transmission_hw_interface:=$(arg transmission_hw_interface)
+                joint_limit_params:=$(arg joint_limit_params)
+                kinematics_params:=$(arg kinematics_params)
+                physical_params:=$(arg physical_params)
+                visual_params:=$(arg visual_params)
+                robot_namespace:=$(arg namespace)"/>
+
+  <!-- ========== Configuração dos controladores ========== -->
+  <!-- Carrega os controladores do UR10 -->
+  <rosparam file="$(arg ur_controller_config)" command="load" ns="$(arg namespace)"/>
+  
+  <!-- Carrega os controladores da garra -->
+  <rosparam file="$(arg gripper_controller_config)" command="load" ns="$(arg namespace)"/>
+
+  <!-- ========== Nós principais ========== -->
+  <!-- Robot state publisher -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="$(arg tf_pub_rate)"/>
+    <param name="tf_prefix" value="$(arg tf_prefix)"/>
+    <remap from="robot_description" to="$(arg namespace)/robot_description"/>
+    <remap from="/joint_states" to="$(arg namespace)/joint_states"/>
+  </node>
+
+  <!-- Spawn dos controladores -->
+ 
+ 
+
+  <!-- ========== Configuração do Gazebo ========== -->
+  <include file="$(find ur10_with_gripper)/launch/inc/ur_control.launch.xml">
+    <arg name="robot_description_param_name" value="$(arg namespace)/robot_description"/>
+    <arg name="gazebo_model_name" value="$(arg gazebo_model_name)"/>
+    <arg name="spawn_x" value="$(arg spawn_x)"/>
+    <arg name="spawn_y" value="$(arg spawn_y)"/>
+    <arg name="spawn_z" value="$(arg spawn_z)"/>
+    <arg name="spawn_roll" value="$(arg spawn_roll)"/>
+    <arg name="spawn_pitch" value="$(arg spawn_pitch)"/>
+    <arg name="spawn_yaw" value="$(arg spawn_yaw)"/>
+    <arg name="controller_config_file" value="$(arg ur_controller_config)"/>
+    <arg name="controllers" value="$(arg controllers)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="stopped_controllers" value="$(arg stopped_controllers)"/>
+    <arg name="gazebo_world" value="$(arg gazebo_world)"/>
+</include>
+
+<!-- Lançar o rqt com o plugin de joint trajectory controller -->
+<node pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller" name="rqt_joint_trajectory_controller" output="screen" />
+
+
+</launch>

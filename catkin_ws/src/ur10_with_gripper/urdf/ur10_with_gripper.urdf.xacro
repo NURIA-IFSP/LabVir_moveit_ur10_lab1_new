@@ -1,29 +1,57 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur10_with_gripper">
 
-  <!-- Inclui o UR10 -->
-  <!-- Definição do parâmetro para o tipo de interface de hardware -->
-  <xacro:property name="transmission_hw_interface" value="hardware_interface/EffortJointInterface"/>
+<!-- Agora o arquivo aceita parâmetros externos via arquivo launch -->
+
+  <!-- Parâmetros recebidos do launch file -->
+  <xacro:arg name="robot_namespace" default=""/>
+  <xacro:arg name="joint_limit_params" default=""/>
+  <xacro:arg name="kinematics_params" default=""/>
+  <xacro:arg name="physical_params" default=""/>
+  <xacro:arg name="visual_params" default=""/>
+  <xacro:arg name="transmission_hw_interface" default="hardware_interface/EffortJointInterface"/>
+  <xacro:arg name="safety_limits" default="false"/>
+  <xacro:arg name="safety_pos_margin" default="0.15"/>
+  <xacro:arg name="safety_k_position" default="20"/>
+
+  <!-- Link world -->
+  <link name="world"/>
   
-  
+  <!-- Junta fixa entre world e base_link -->
+  <joint name="world_to_base_joint" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Inclui e instancia o UR10 -->
   <xacro:include filename="$(find ur_description)/urdf/inc/ur10_macro.xacro"/>
-  <!-- Instancia o UR10 com o parâmetro -->
-  <xacro:ur10_robot 
+  
+   <!-- Carrega os parâmetros YAML diretamente -->
+  <xacro:property name="joint_limits_parameters" value="$(arg joint_limit_params)"/>
+  <xacro:property name="kinematics_parameters" value="$(arg kinematics_params)"/>
+  <xacro:property name="physical_parameters" value="$(arg physical_params)"/>
+  <xacro:property name="visual_parameters" value="$(arg visual_params)"/>
+
+
+   <xacro:ur10_robot 
     prefix=""
-    transmission_hw_interface="${transmission_hw_interface}" />
-  <!-- <xacro:ur10_robot prefix="" /> -->
+    transmission_hw_interface="$(arg transmission_hw_interface)"
+    joint_limits_parameters_file="${joint_limits_parameters}"
+    kinematics_parameters_file="${kinematics_parameters}"
+    physical_parameters_file="${physical_parameters}"
+    visual_parameters_file="${visual_parameters}" />
   
-  <!-- Inclui a garra PG70 -->
-    <xacro:include filename="$(find ur10_with_gripper)/urdf/pg70_with_control.urdf.xacro"/>
-
-    <!-- Adiciona a garra ao final do braço -->
-    <xacro:schunk_pg70 parent="tool0" name="pg70">
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-    </xacro:schunk_pg70>
+  <!-- Inclui e instancia a garra PG70 -->
+  <xacro:include filename="$(find ur10_with_gripper)/urdf/pg70_with_control.urdf.xacro"/>
+  <xacro:schunk_pg70 parent="tool0" name="pg70">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:schunk_pg70>
   
-  <!-- Plugin para ROS control via Gazebo -->
+  <!-- Plugin para ROS control -->
   <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>$(arg robot_namespace)</robotNamespace>
+    </plugin>
   </gazebo>
-
 </robot>
