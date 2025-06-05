@@ -41,6 +41,8 @@ RUN sudo apt update && sudo apt upgrade -y && \
     python3-catkin-tools \
     ros-noetic-moveit \
     ros-noetic-catkin \
+    ros-noetic-serial \
+    ros-noetic-rqt-joint-trajectory-controller \
     libpoco-dev \
     python3-wstool
 

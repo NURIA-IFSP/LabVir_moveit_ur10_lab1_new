@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <launch>
   <!-- Namespace para o robô -->
   <arg name="namespace" default="/ur10" />
@@ -91,9 +92,25 @@
     <arg name="stopped_controllers" value="$(arg stopped_controllers)"/>
     <arg name="gazebo_world" value="$(arg gazebo_world)"/>
 </include>
+  
+  <node pkg="tf" type="static_transform_publisher" name="world_to_ur10_tf" 
+      args="1.0 0.0 0.505 0 0 1.57 ur10/world ur10/base_link 100"/>
+  
+  
+  <!-- Carrega os pacotes do moveit no namespace correto -->
+  
+<group ns="$(arg namespace)">
+  <include file="$(find ur10_gripper_config)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="false" />
+  </include>
 
-<!-- Lançar o rqt com o plugin de joint trajectory controller -->
-<node pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller" name="rqt_joint_trajectory_controller" output="screen" />
+  <include file="$(find ur10_gripper_config)/launch/move_group.launch" >
+    <arg name="publish_monitored_planning_scene" value="true" />
+  </include>
 
+  <include file="$(find ur10_gripper_config)/launch/moveit_rviz.launch" >
+    <arg name="rviz_config" value="$(find ur10_gripper_config)/launch/moveit.rviz" />
+  </include>
+</group>
 
 </launch>

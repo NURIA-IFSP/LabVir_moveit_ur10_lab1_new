@@ -27,6 +27,7 @@ echo "### [2/6] Instalando biblioteca serial ###"
 sudo apt update
 sudo apt install ros-noetic-serial
 
+
 # echo "### [3/6] Adicionando chave e repositório do ROS ###"
 
 # sudo apt update

@@ -1,5 +1,5 @@
 # Controlador da garra PG70 (ajuste os nomes das juntas conforme necessário)
 gripper_controller:
-  type: effort_controllers/JointPositionController
+  type: position_controllers/JointPositionController
   joint: pg70_finger_left_joint
   pid: {p: 100.0, i: 0.01, d: 10.0}

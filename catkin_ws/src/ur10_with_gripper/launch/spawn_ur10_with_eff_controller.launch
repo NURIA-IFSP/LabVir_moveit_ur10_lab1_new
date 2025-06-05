@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- Define o caminho para o arquivo Xacro -->
+  <!-- <arg name="urdf_file" default="$(find ur10_with_gripper)/urdf/ur10_with_gripper.xacro" /> -->
+
+<!-- Processa o Xacro e publica o URDF -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find ur10_with_gripper)/urdf/ur10_with_gripper.xacro" />
+
+<!-- Argumentos personalizáveis -->
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="world_name" default="$(find ur10_moveit_lab)/worlds/lab2.world"/>
+  <arg name="x" default="1.0" />
+  <arg name="y" default="0.0" />
+  <arg name="z" default="0.505" />
+
+
+  <!-- Inicia o Gazebo com o mundo personalizado -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <!-- Spawna/Gera o robo no gazebo conforme robot description -->
+    <node name="spawn_the_robot" pkg="gazebo_ros" type="spawn_model" output="screen" 
+        args= "-urdf -param robot_description -model ur10_with_gripper -x $(arg x) -y $(arg y) -z $(arg z)"
+    />
+
+  <!-- Carrega os controladores no servidor de parametros do ROS -->
+  <rosparam command="load" file="$(find ur10_with_gripper)/config/ur10_eff_controllers.yaml"/>
+
+
+  <!-- Carrega e inicia os controladores listados no namespace fornecido -->
+ <node name="ros_control_controller_spawner" pkg="controller_manager" type="spawner"
+    output="screen" respawn="false" ns="ur10"
+    args= "joint_state_controller eff_joint_traj_controller --timeout 60" />
+
+  <!-- Robot state publisher -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"
+    output="screen" respawn="false">
+    <remap from="/joint_states" to="ur10/joint_states"/>
+  </node>
+
+  <!-- Robot state publisher -->
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" >
+    <remap from="/joint_states" to="ur10/joint_states"/>
+  </node>
+  
+  <!-- Carrega os pacotes do moveit -->
+
+  <include file="$(find ur10_gripper_config)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="false" />
+  </include>
+
+  <include file="$(find ur10_gripper_config)/launch/move_group.launch" >
+    <arg name="publish_monitored_planning_scene" value="true" />
+  </include>
+
+  <include file="$(find ur10_gripper_config)/launch/moveit_rviz.launch" >
+    <arg name="rviz_config" value="$(find ur10_gripper_config)/launch/moveit.rviz" />
+  </include>
+
+
+</launch>
