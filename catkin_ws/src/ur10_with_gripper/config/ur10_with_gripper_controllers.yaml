@@ -1,3 +1,5 @@
+# Arquivo que unifica os controladores do UR10 e do PG70
+# *** Não utilizado pois o carregamento está sendo feito separadamente ***
 joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: &loop_hz 125
@@ -68,7 +70,14 @@ gripper_traj_controller:
     action_monitor_rate: 10
 
 gripper_controller:
-  type: effort_controllers/JointPositionController
-  joint: pg70_finger_left_joint
-  pid: {p: 100.0, i: 0.01, d: 10.0}
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - pg70_finger_left_joint
+  constraints:
+    goal_time: 0.5
+    stopped_velocity_tolerance: 0.01
+    pg70_finger_left_joint: {trajectory: 0.01, goal: 0.01}
+  stop_trajectory_duration: 0.2
+  state_publish_rate: 50
+  action_monitor_rate: 10
 

@@ -1,4 +1,11 @@
 <?xml version="1.0"?>
+
+<!-- Arquivo descrição do robô UR10 com garra PG70 
+Agrega o ur10_macro.xacro oficinal com o pg70_with_control.urdf.xacro 
+Define uma junta entre o mundo e a base do robô
+Inclui o plugin gazebo_ros_control para controlar o robô via ROS control.
+-->
+
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur10_with_gripper">
 
 <!-- Agora o arquivo aceita parâmetros externos via arquivo launch -->

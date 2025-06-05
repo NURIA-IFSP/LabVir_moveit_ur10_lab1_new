@@ -1,3 +1,9 @@
+# Arquivo já configurado para o UR10 com gripper PG70
+# dentro do namespace do UR10.
+# Arquivo que configura os controladores que o moveit deve utilizar
+# para controlar o robô UR10 com a garra PG70.
+# Este arquivo deve ser colocado dentro do diretório de configuração do moveit.
+
 controller_list:
   - name: "/ur10/eff_joint_traj_controller"
     action_ns: follow_joint_trajectory

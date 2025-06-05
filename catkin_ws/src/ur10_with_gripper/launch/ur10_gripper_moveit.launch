@@ -23,6 +23,7 @@
   <arg name="transmission_hw_interface" default="hardware_interface/EffortJointInterface"/>
 
   <!-- Configuração dos controladores -->
+  <!-- Carrega separadamente os controladores do UR10 a partir do repositorio oficial e a garra a partir do repositorio local -->
   <arg name="ur_controller_config" default="$(find ur_gazebo)/config/ur10_controllers.yaml"/>
   <arg name="gripper_controller_config" default="$(find ur10_with_gripper)/config/pg70_controllers.yaml"/>
   <arg name="controllers" default="joint_state_controller eff_joint_traj_controller gripper_controller"/>
