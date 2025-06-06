@@ -104,8 +104,7 @@ Você poderá movimentar os slides laterais para movimentação e teste do braç
 O Gazebo deverá abrir com esta tela:
 ![UR10 Gazebo sem garra](./images/readme/tela_robot_gazebo.png)
 
-## Simulação do braço robótico no Gazebo com o Movit e - RVIz SEM A GARRA
-
+## Simulação do braço robótico no Gazebo com o Movit e RViz sem a garra
 ```bash
     roslaunch ur10_moveit_lab ur10_world_lab1.launch
 ```
@@ -115,6 +114,18 @@ A seguinte tela deverá abrir:
 
 Alterando-se a posição do braço robótico no RViz, o braço robótico será movido no Gazebo.
 
+## Simulação do braço robótico completo no Gazebo com Movit e Rviz
+
+```bash
+    roslaunch ur10_with_gripper ur10_gripper_moveit.launch
+```
+
+A seguinte tela deverá abrir:
+![UR10 com garra Gazebo com Moveit](./images/readme/ur10_moveit_gazebo1.png)
+
+Controlando o braço robótico na aba gripper/manipulador do MotionPlanning o moveit irá calcular a trajetório e o robo irá se movimentar no Gazebo
+
+RViz -> MotionPlanning -> PlanningGroup -> GoalState -> Plan -> Execute
 
 ## Tutorial Via GitHub Codespaces
 

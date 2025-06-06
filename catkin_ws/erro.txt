@@ -1,0 +1,27 @@
+ubuntu ➜ /LabVir_moveit_ur10_lab1_new/catkin_ws (ur10_pick_and_place) $ rosrun pick_and_place_ik ur
+ur10_pick_and_place_node  ur5_ik_test.py            ur5_pick_and_place.py
+ubuntu ➜ /LabVir_moveit_ur10_lab1_new/catkin_ws (ur10_pick_and_place) $ rosrun pick_and_place_ik ur10_pick_and_place_node 
+[WARN] [1749221244.926584665]: link 'pg70_finger_left_link' material 'black' undefined.
+[WARN] [1749221244.927913455]: link 'pg70_finger_left_link' material 'black' undefined.
+[WARN] [1749221244.928000101]: link 'pg70_fingertip_left_link' material 'silver' undefined.
+[WARN] [1749221244.928028225]: link 'pg70_fingertip_left_link' material 'silver' undefined.
+[WARN] [1749221244.928101367]: link 'pg70_finger_right_link' material 'black' undefined.
+[WARN] [1749221244.928122645]: link 'pg70_finger_right_link' material 'black' undefined.
+[WARN] [1749221244.928199099]: link 'pg70_fingertip_right_link' material 'silver' undefined.
+[WARN] [1749221244.928225434]: link 'pg70_fingertip_right_link' material 'silver' undefined.
+[INFO] [1749221244.930023712]: Loading robot model 'ur10_with_gripper'...
+[INFO] [1749221246.083458259]: Ready to take commands for planning group manipulator.
+[WARN] [1749221247.207304263]: Fail: ABORTED: No motion plan found. No execution attempted.
+^Cubuntu ➜ /LabVir_moveit_ur10_lab1_new/catkin_ws (ur10_pick_and_place) $ rosrun pick_and_place_ik ur10_pick_and_place_node 
+[WARN] [1749221473.950660832]: link 'pg70_finger_left_link' material 'black' undefined.
+[WARN] [1749221473.952056922]: link 'pg70_finger_left_link' material 'black' undefined.
+[WARN] [1749221473.952172001]: link 'pg70_fingertip_left_link' material 'silver' undefined.
+[WARN] [1749221473.952213034]: link 'pg70_fingertip_left_link' material 'silver' undefined.
+[WARN] [1749221473.952323427]: link 'pg70_finger_right_link' material 'black' undefined.
+[WARN] [1749221473.952361803]: link 'pg70_finger_right_link' material 'black' undefined.
+[WARN] [1749221473.952497212]: link 'pg70_fingertip_right_link' material 'silver' undefined.
+[WARN] [1749221473.952531357]: link 'pg70_fingertip_right_link' material 'silver' undefined.
+[INFO] [1749221473.954613621]: Loading robot model 'ur10_with_gripper'...
+[INFO] [1749221475.256152854]: Ready to take commands for planning group manipulator.
+[WARN] [1749221476.320348120]: Fail: ABORTED: No motion plan found. No execution attempted.
+

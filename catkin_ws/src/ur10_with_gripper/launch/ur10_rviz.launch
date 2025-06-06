@@ -1,6 +1,6 @@
 <launch>
   <!-- Define o caminho para o arquivo Xacro -->
-  <arg name="urdf_file" default="$(find ur10_with_gripper)/urdf/ur10_with_gripper.xacro" />
+  <arg name="urdf_file" default="$(find ur10_with_gripper)/urdf/ur10_with_gripper.urdf.xacro" />
 
   <!-- Processa o Xacro e publica o URDF -->
   <param name="robot_description" command="$(find xacro)/xacro '$(arg urdf_file)'" />
@@ -15,4 +15,5 @@
 
   <!-- Abre o RViz com a configuração salva -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ur10_with_gripper)/rviz/ur10_with_gripper.rviz" required="true" />
+
 </launch>
