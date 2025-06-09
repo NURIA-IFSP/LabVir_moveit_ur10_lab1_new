@@ -3,3 +3,4 @@ pick_and_place_ik
 /LabVir_moveit_ur10_lab1_new/catkin_ws/devel/.private/pick_and_place_ik/share/pick_and_place_ik/cmake/pick_and_place_ikConfig-version.cmake /LabVir_moveit_ur10_lab1_new/catkin_ws/devel/share/pick_and_place_ik/cmake/pick_and_place_ikConfig-version.cmake
 /LabVir_moveit_ur10_lab1_new/catkin_ws/devel/.private/pick_and_place_ik/lib/pkgconfig/pick_and_place_ik.pc /LabVir_moveit_ur10_lab1_new/catkin_ws/devel/lib/pkgconfig/pick_and_place_ik.pc
 /LabVir_moveit_ur10_lab1_new/catkin_ws/devel/.private/pick_and_place_ik/lib/pick_and_place_ik/ur10_pick_and_place_node /LabVir_moveit_ur10_lab1_new/catkin_ws/devel/lib/pick_and_place_ik/ur10_pick_and_place_node
+/LabVir_moveit_ur10_lab1_new/catkin_ws/devel/.private/pick_and_place_ik/lib/pick_and_place_ik/move_group_interface_tutorial_node /LabVir_moveit_ur10_lab1_new/catkin_ws/devel/lib/pick_and_place_ik/move_group_interface_tutorial_node

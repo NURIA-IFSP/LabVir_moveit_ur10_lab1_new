@@ -1,267 +1,284 @@
+
+# Explicação do Código C++: Pick and Place com UR10 + PG70
+
+Este documento fornece uma explicação detalhada do código C++ que implementa um sistema de pick and place utilizando o robô UR10 com a garra Schunk PG70, usando MoveIt no ROS.
+
+---
+
+## Visão Geral
+
+O código realiza as seguintes etapas:
+1. Inicialização do ROS e MoveIt.
+2. Adição de objetos de colisão à cena (duas mesas e um objeto cilíndrico).
+3. Execução do movimento de `pick`.
+4. Execução do movimento de `place`.
+
+---
+
+## Estrutura do Código
+
+### Includes Principais
+
+```cpp
 #include <ros/ros.h>
-// MoveIt
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/move_group_interface/move_group_interface.h>
-// TF2
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+```
 
-// tau = 1 rotation in radiants
+### Constantes
+
+```cpp
 const double tau = 2 * M_PI;
+```
+Tau representa 1 volta completa em radianos (2π).
 
+---
 
+## Controle do Gripper
+
+### `openGripper` e `closedGripper`
+
+Essas funções ajustam o valor da junta do gripper para abrir (0.04 m) ou fechar (0.015 m). A junta controlada é `"pg70_finger_left_joint"`.
+
+```cpp
 void openGripper(trajectory_msgs::JointTrajectory& posture)
 {
     posture.joint_names.resize(1);
-    /* joint name alterado para o gripper pg70 */
     posture.joint_names[0] = "pg70_finger_left_joint";
-
-    /* Set them as open, wide enough for the object to fit. */
     posture.points.resize(1);
     posture.points[0].positions.resize(1);
-    /* Posicao em que o gripper está aberto*/
-    posture.points[0].positions[0] = 0.04;
+    posture.points[0].positions[0] = 0.04;  // Posição aberta
     posture.points[0].time_from_start = ros::Duration(0.5);
 }
-
 
 void closedGripper(trajectory_msgs::JointTrajectory& posture)
 {
     posture.joint_names.resize(1);
-     /* joint name alterado para o gripper pg70 */
     posture.joint_names[0] = "pg70_finger_left_joint";
-
-    /* Set them as open, wide enough for the object to fit. */
     posture.points.resize(1);
     posture.points[0].positions.resize(1);
-    /* Posicao em que o gripper está fechado*/
-    posture.points[0].positions[0] = 0.015;
+    posture.points[0].positions[0] = 0.015;  // Posição fechada
     posture.points[0].time_from_start = ros::Duration(0.5);
-
-
 }
 
+```
+
+---
+
+## Movimento de Pick
+
+### Função: `ur10_pick`
+
+Define:
+- A pose de grasp (`grasp_pose`) com posição e orientação obtidas no RViz.
+- A abordagem pré-grasp e o recuo pós-grasp.
+- Posturas do gripper antes e depois da pega.
+- Usa `move_group.pick("object", grasps)` para executar a ação.
+
+```cpp
 void ur10_pick(moveit::planning_interface::MoveGroupInterface& move_group)
 {
     std::vector<moveit_msgs::Grasp> grasps;
     grasps.resize(1);
 
-    // Grasp pose
+    // Configuração da pose de grasp
     grasps[0].grasp_pose.header.frame_id = "base_link";
     tf2::Quaternion orientation;
-    orientation.setRPY(3.141, 0.004, -1.571); // Orientação obtida do rviz, ajustada para o pick
-    // orientation.setRPY(0, M_PI, 0);
-    
-    // Posição obtida do tf tf_echo durante a execução do rviz [-1.000, -0.007, 0.494]
+    orientation.setRPY(3.141, 0.004, -1.571);
     grasps[0].grasp_pose.pose.orientation = tf2::toMsg(orientation);
     grasps[0].grasp_pose.pose.position.x = -1.002;
     grasps[0].grasp_pose.pose.position.y = 0.007;
     grasps[0].grasp_pose.pose.position.z = 0.494;
     
-    // Pre-grasp approach
+    // Configuração da abordagem pré-grasp
     grasps[0].pre_grasp_approach.direction.header.frame_id = "base_link";
-    // Direction is set as positive x axis
     grasps[0].pre_grasp_approach.direction.vector.z = -1.0;
     grasps[0].pre_grasp_approach.min_distance = 0.095;
     grasps[0].pre_grasp_approach.desired_distance = 0.115;
 
-    // Post-grasp retreat
+    // Configuração do retorno pós-grasp
     grasps[0].post_grasp_retreat.direction.header.frame_id = "base_link";
-    //Direction is set as positive z axis 
     grasps[0].post_grasp_retreat.direction.vector.z = 1.0;
     grasps[0].post_grasp_retreat.min_distance = 0.05;
     grasps[0].post_grasp_retreat.desired_distance = 0.25;
 
-    // we need to open the gripper. We will define a function for that
     openGripper(grasps[0].pre_grasp_posture);
-
-    // When it grasps it needs to close the gripper
     closedGripper(grasps[0].grasp_posture);
 
-    // Set support surface as table 1
     move_group.setSupportSurfaceName("table1");
-
-    // Set current state as start state
     move_group.setStartStateToCurrentState();
-
-    // Call pick to pick up the object using the grasps given
     move_group.pick("object", grasps);
-
 }
+```
 
+---
+
+## Movimento de Place
+
+### Função: `ur10_place`
+
+Define:
+- A pose de colocação (`place_pose`) com orientação de 90º no eixo Z.
+- Aproximação pré-place e recuo pós-place.
+- Abre o gripper após o posicionamento.
+- Executa com `group.place("object", place_location)`.
+
+```cpp
 void ur10_place(moveit::planning_interface::MoveGroupInterface& group)
 {
     std::vector<moveit_msgs::PlaceLocation> place_location;
     place_location.resize(1);
 
-    // Definindo a pose do objeto a ser colocado
     place_location[0].place_pose.header.frame_id = "base_link";
-
     tf2::Quaternion orientation;
-    // Rotaciona o objeto 90 graus em torno do eixo Z
-    orientation.setRPY(0, 0, M_PI / 2);  // tau / 4
+    orientation.setRPY(0, 0, M_PI / 2);
     place_location[0].place_pose.pose.orientation = tf2::toMsg(orientation);
-
-    // Posição de destino desejada (atualize conforme sua necessidade)
     place_location[0].place_pose.pose.position.x = 0.0;
     place_location[0].place_pose.pose.position.y = 1.0;
     place_location[0].place_pose.pose.position.z = 0.30;
 
-    // Pre-place approach (aproximação antes de soltar o objeto)
     place_location[0].pre_place_approach.direction.header.frame_id = "base_link";
-    place_location[0].pre_place_approach.direction.vector.z = -1.0;  // Direção: para baixo
+    place_location[0].pre_place_approach.direction.vector.z = -1.0;
     place_location[0].pre_place_approach.min_distance = 0.095;
     place_location[0].pre_place_approach.desired_distance = 0.115;
 
-    // Post-place retreat (retirada após soltar o objeto)
     place_location[0].post_place_retreat.direction.header.frame_id = "base_link";
-    place_location[0].post_place_retreat.direction.vector.z = 1.0;  // Retira para frente
+    place_location[0].post_place_retreat.direction.vector.z = 1.0;
     place_location[0].post_place_retreat.min_distance = 0.1;
     place_location[0].post_place_retreat.desired_distance = 0.25;
 
-    // Abrir garra após posicionar
     openGripper(place_location[0].post_place_posture);
-
-    // Nome da superfície de suporte (deve coincidir com a collision object)
     group.setSupportSurfaceName("table2");
-
-    // Executar ação de place
     group.place("object", place_location);
 }
+```
 
-/**
- * @brief Adiciona objetos de colisão ao cenário de planejamento do MoveIt.
- *
- * Esta função define e adiciona três objetos de colisão ao ambiente:
- * duas mesas (table1 e table2) e um objeto cilíndrico (object) que será manipulado.
- * Cada objeto é definido com suas dimensões, posição e orientação relativas ao frame "base_link".
- * 
- * Objetos adicionados:
- * - table1: Caixa (0.5 x 0.5 x 0.5 m) posicionada em (-1.0, 0, 0)
- * - table2: Caixa (0.5 x 0.5 x 0.5 m) posicionada em (0, 1.0, 0)
- * - object: Cilindro (altura 0.12 m, raio 0.03 m) posicionado em (-1.0, 0, 0.31)
- *
- * @param planning_scene_interface Referência para a interface do cenário de planejamento do MoveIt,
- *        utilizada para aplicar os objetos de colisão definidos.
- */
+---
+
+## Adição de Objetos de Colisão
+
+### Função: `addCollisionObject`
+
+Adiciona 3 objetos:
+- `table1`: Mesa no ponto (-1.0, 0, 0)
+- `table2`: Mesa no ponto (0, 1.0, 0)
+- `object`: Cilindro a ser manipulado, posicionado em (-1.0, 0, 0.31)
+
+Utiliza a interface `PlanningSceneInterface` para aplicar os objetos ao ambiente de simulação do MoveIt.
+
+```cpp
 void addCollisionObject(moveit::planning_interface::PlanningSceneInterface& planning_scene_interface)
 {
-    /* Definição do cenário pick and place */
     std::vector<moveit_msgs::CollisionObject> collision_objects;
     collision_objects.resize(3);
 
-    // Inclui a primeira mesa
+    // Mesa 1 (pick)
     collision_objects[0].id = "table1";
     collision_objects[0].header.frame_id = "base_link";
-
-    // Define as primitivas dimensão e posição da table1 - pick position
     collision_objects[0].primitives.resize(1);
     collision_objects[0].primitives[0].type = collision_objects[0].primitives[0].BOX;
-    collision_objects[0].primitives[0].dimensions.resize(3);
-    collision_objects[0].primitives[0].dimensions[0] = 0.5;
-    collision_objects[0].primitives[0].dimensions[1] = 0.5;
-    collision_objects[0].primitives[0].dimensions[2] = 0.5;
-    
-    // pose of table 1
+    collision_objects[0].primitives[0].dimensions = {0.5, 0.5, 0.5};
     collision_objects[0].primitive_poses.resize(1);
-    collision_objects[0].primitive_poses[0].position.x = -1.0;
-    collision_objects[0].primitive_poses[0].position.y = 0;
-    collision_objects[0].primitive_poses[0].position.z = 0;
+    collision_objects[0].primitive_poses[0].position = {-1.0, 0, 0};
     collision_objects[0].primitive_poses[0].orientation.w = 1.0;
-    // Add tabe 1 to the scene
     collision_objects[0].operation = collision_objects[0].ADD;
 
-
-    // Add the second table
+    // Mesa 2 (place)
     collision_objects[1].id = "table2";
     collision_objects[1].header.frame_id = "base_link";
-
-    // Define primitive dimension, position of the table 2
     collision_objects[1].primitives.resize(1);
     collision_objects[1].primitives[0].type = collision_objects[0].primitives[0].BOX;
-    collision_objects[1].primitives[0].dimensions.resize(3);
-    collision_objects[1].primitives[0].dimensions[0] = 0.5;
-    collision_objects[1].primitives[0].dimensions[1] = 0.5;
-    collision_objects[1].primitives[0].dimensions[2] = 0.5;
-    // pose of table 2
+    collision_objects[1].primitives[0].dimensions = {0.5, 0.5, 0.5};
     collision_objects[1].primitive_poses.resize(1);
-    collision_objects[1].primitive_poses[0].position.x = 0;
-    collision_objects[1].primitive_poses[0].position.y = 1.0;
-    collision_objects[1].primitive_poses[0].position.z = 0;
+    collision_objects[1].primitive_poses[0].position = {0, 1.0, 0};
     collision_objects[1].primitive_poses[0].orientation.w = 1.0;
-    // Add tabe 2 to the scene
     collision_objects[1].operation = collision_objects[1].ADD;
 
-    // Add the object to be picked
+    // Objeto a ser manipulado
     collision_objects[2].id = "object";
     collision_objects[2].header.frame_id = "base_link";
-
-    // Define primitive dimension, position of the object
     collision_objects[2].primitives.resize(1);
     collision_objects[2].primitives[0].type = collision_objects[0].primitives[0].CYLINDER;
-    collision_objects[2].primitives[0].dimensions.resize(2);
-    collision_objects[2].primitives[0].dimensions[0] = 0.12;
-    collision_objects[2].primitives[0].dimensions[1] = 0.03;
-    
-    // pose of object
+    collision_objects[2].primitives[0].dimensions = {0.12, 0.03}; // altura e raio
     collision_objects[2].primitive_poses.resize(1);
-    collision_objects[2].primitive_poses[0].position.x = -1.0;
-    collision_objects[2].primitive_poses[0].position.y = 0;
-    collision_objects[2].primitive_poses[0].position.z = 0.31;
+    collision_objects[2].primitive_poses[0].position = {-1.0, 0, 0.31};
     collision_objects[2].primitive_poses[0].orientation.w = 1.0;
-    // Add tabe 2 to the object
     collision_objects[2].operation = collision_objects[2].ADD;
 
     planning_scene_interface.applyCollisionObjects(collision_objects);
-
 }
 
+```
+---
 
+## Função Principal `main`
+
+1. Inicializa ROS.
+2. Inicializa `MoveGroupInterface` para o braço e para o gripper.
+3. Chama `addCollisionObject()`.
+4. Move o braço para a posição inicial `up`.
+5. Executa `ur10_pick()` e depois `ur10_place()`.
+
+```cpp
 int main(int argc, char** argv)
 {
-    // Inicialização do ROS
     ros::init(argc, argv, "ur10_pick_and_place_node");
     ros::NodeHandle nh;
     ros::AsyncSpinner spinner(1);
     spinner.start();
 
-    // Inicializa os grupos de movimento
     moveit::planning_interface::MoveGroupInterface group("manipulator");
     moveit::planning_interface::MoveGroupInterface gripper("gripper");
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
-    // Tempo para setup
     ros::WallDuration(1.0).sleep();
-
     group.setPlanningTime(45.0);
 
-    // Adiciona objetos de colisão
     addCollisionObject(planning_scene_interface);
-
-    // Espera a cena ser atualizada
     ros::WallDuration(1.0).sleep();
 
-    // === Vai para a posição inicial do braço ===
+    // Move para posição inicial
     ROS_INFO("Movendo braco para posicao 'up'...");
     group.setNamedTarget("up");
     group.move();
     group.stop();
     ros::WallDuration(1.0).sleep();
 
-    // === Abre o gripper ===
+    // Abre o gripper
     ROS_INFO("Abrindo gripper na posicao 'open'...");
     gripper.setNamedTarget("open");
     gripper.move();
     gripper.stop();
     ros::WallDuration(1.0).sleep();
 
-    // === Pick and Place ===
+    // Executa pick and place
     ur10_pick(group);
     ros::WallDuration(1.0).sleep();
-
-    // === Abre o gripper ===
     ROS_INFO("Posicionando o objeto 'place'..."); 
     ur10_place(group);
 
     ROS_INFO("Pick and place realizado ...");
     return 0;
 }
+
+```
+
+---
+
+## Considerações
+
+- A manipulação depende da correta configuração da cena e nomes das juntas.
+- O gripper PG70 é modelado como um único dedo com `mimic`, usando apenas a junta `"pg70_finger_left_joint"`.
+
+---
+
+## Requisitos
+
+- ROS Noetic
+- MoveIt
+- UR10 + Schunk PG70 URDF/XACRO
+- Objeto e mesas definidos como `collision_objects`
+
+---
+
