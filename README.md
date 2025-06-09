@@ -308,7 +308,7 @@ Você deverá ver a garra se movimentar, conforme mostrado na figura:
 Na execução via github Codespaces você não precisará instalar nada em seu computador, terá apenas que ter uma conta no github.
 
 1. Acesse o repositório do projeto no github:
-    [https://github.com/NURIA-IFSP/LabVir_moveit_tutorial](https://github.com/NURIA-IFSP/LabVir_moveit_tutorial)
+    [https://github.com/NURIA-IFSP/LabVir_moveit_ur10_lab1_pick_and_place](https://github.com/NURIA-IFSP/LabVir_moveit_ur10_lab1_new)
     - Clique no botão "Code" e selecione "Codespaces"
     - O ambiente começará a ser montado no Codespaces (isso pode levar alguns minutos)
 
